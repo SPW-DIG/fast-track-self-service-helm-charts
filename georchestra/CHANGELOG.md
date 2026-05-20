@@ -1,3 +1,7 @@
+# 1.18.0
+- add redis support in the helm chart (#226)
+- Add ES username and password envs in GN4 OGC API's deployment (#227)
+
 # 1.17.0
 - Remove geoserver filesystem sandbox (#225)
 - Allow custom labels and annotations on PVCs (#224)
