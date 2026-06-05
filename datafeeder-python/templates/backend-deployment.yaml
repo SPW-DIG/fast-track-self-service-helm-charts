@@ -57,7 +57,7 @@ spec:
             value: "/etc/georchestra"
           - name: ENVIRONMENT
             value: "production"
-          - name: BACKEND_URL
+          - name: BACKEND_INTERNAL_URL
             value: "http://{{ include "datafeeder-python.fullname" . }}-backend-svc:8000"
           - name: FRONTEND_HOST
             value: "{{ $webapp.config.frontend.url }}"
@@ -65,19 +65,19 @@ spec:
             value: "{{ $webapp.config.corsOrigins }}"
           - name: CONSOLE_URL
             value: "{{ $webapp.config.console.url | default "http://georchestra-console-svc:8080/console" }}"
-          - name: GEOSERVER_URL
+          - name: GEOSERVER_INTERNAL_URL
             value: "{{ $webapp.config.geoserver.url | default "http://georchestra-gateway-svc:8080/geoserver" }}"
           - name: GEOSERVER_USER
             value: "{{ $webapp.config.geoserver.username }}"
           - name: GEOSERVER_PASSWORD
             value: "{{ $webapp.config.geoserver.password }}"
-          - name: GEONETWORK_URL
+          - name: GEONETWORK_INTERNAL_URL
             value: "{{ $webapp.config.geonetwork.url | default "http://georchestra-gateway-svc:8080/geonetwork" }}"
           - name: GEONETWORK_USERNAME
             value: "{{ $webapp.config.geonetwork.username }}"
           - name: GEONETWORK_PASSWORD
             value: "{{ $webapp.config.geonetwork.password }}"
-          - name: AIRFLOW_URL
+          - name: AIRFLOW_INTERNAL_URL
             value: {{ $webapp.config.airflow.url | default (printf "http://%s-api-server:8080/airflow" .Release.Name) | quote }}
           - name: AIRFLOW_USERNAME
             value: "{{ $webapp.config.airflow.username }}"
@@ -89,6 +89,8 @@ spec:
             value: "{{ $webapp.config.dataFetchGroupsUrl | default "http://georchestra-console-svc:8080/console/internal/roles" }}"
           - name: DATA_PUBLIC_URL
             value: "{{ $webapp.config.dataPublicUrl }}"
+          - name: METADATA_PUBLIC_URL
+            value: "{{ $webapp.config.metadataPublicUrl }}"
             {{- with $webapp.extraEnv }}
               {{- toYaml . | nindent 10 }}
             {{- end }}
