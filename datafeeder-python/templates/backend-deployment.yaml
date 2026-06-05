@@ -63,7 +63,7 @@ spec:
             value: "{{ $webapp.config.frontend.url }}"
           - name: BACKEND_CORS_ORIGINS
             value: "{{ $webapp.config.corsOrigins }}"
-          - name: CONSOLE_URL
+          - name: CONSOLE_INTERNAL_URL
             value: "{{ $webapp.config.console.url | default "http://georchestra-console-svc:8080/console" }}"
           - name: GEOSERVER_INTERNAL_URL
             value: "{{ $webapp.config.geoserver.url | default "http://georchestra-gateway-svc:8080/geoserver" }}"
