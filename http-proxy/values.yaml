@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: georchestra/http-proxy
   pullPolicy: IfNotPresent
-  tag: "1.5.0-0"
+  tag: "1.5.0-georchestra-01"
 
 imagePullSecrets: []
 nameOverride: ""
