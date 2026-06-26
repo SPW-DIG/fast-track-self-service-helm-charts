@@ -292,7 +292,7 @@ airflow:
   #   useHelmHooks: false
   #   jobAnnotations:
   #     "argocd.argoproj.io/hook": Sync
-  
+
 airflowDbCleanup:
   enabled: true
   # Run on the 1st of every month at midnight
@@ -300,7 +300,7 @@ airflowDbCleanup:
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
   # Secret created by the Airflow subchart containing the metadata DB connection URL.
-  # Defaults to "{release-name}-airflow-metadata" if not set.
+  # Defaults to "{release-name}-metadata" if not set.
   connectionSecretName: ""
   # Override the full command to customise the retention period or any other argument.
   command:
