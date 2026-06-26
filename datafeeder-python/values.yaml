@@ -302,6 +302,7 @@ airflowDbCleanup:
   # Secret created by the Airflow subchart containing the metadata DB connection URL.
   # Defaults to "{release-name}-metadata" if not set.
   connectionSecretName: ""
+  connectionSecretKey: connection
   # Override the full command to customise the retention period or any other argument.
   command:
     - /bin/bash

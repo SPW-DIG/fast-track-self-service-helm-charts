@@ -29,8 +29,10 @@ spec:
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
               valueFrom:
                 secretKeyRef:
-                  name: {{ $cronjob.connectionSecretName | default (printf "%s-metadata" .Release.Name) }}
-                  key: connection
+                  {{- with $cronjob }}
+                  name: {{ .connectionSecretName | default (printf "%s-metadata" $.Release.Name) }}
+                  key: {{ .connectionSecretKey | default "connection" }}
+                  {{- end }}
             {{- with $cronjob.resources }}
             resources:
               {{- toYaml . | nindent 14 }}
