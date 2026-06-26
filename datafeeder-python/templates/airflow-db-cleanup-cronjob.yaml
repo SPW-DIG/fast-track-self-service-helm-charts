@@ -1,0 +1,38 @@
+{{- if .Values.airflowDbCleanup.enabled }}
+{{- $cronjob := .Values.airflowDbCleanup }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "datafeeder-python.fullname" . }}-airflow-db-cleanup
+  labels:
+    {{- include "datafeeder-python.labels" . | nindent 4 }}
+spec:
+  schedule: {{ $cronjob.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ $cronjob.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ $cronjob.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: airflow-db-cleanup
+            image: "{{ .Values.airflow.images.airflow.repository }}:{{ .Values.airflow.images.airflow.tag }}"
+            imagePullPolicy: {{ .Values.airflow.images.airflow.pullPolicy }}
+            command: {{- toYaml $cronjob.command | nindent 12 }}
+            env:
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $cronjob.connectionSecretName | default (printf "%s-airflow-metadata" .Release.Name) }}
+                  key: connection
+            {{- with $cronjob.resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+{{- end }}

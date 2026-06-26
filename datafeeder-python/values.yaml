@@ -292,6 +292,30 @@ airflow:
   #   useHelmHooks: false
   #   jobAnnotations:
   #     "argocd.argoproj.io/hook": Sync
+  
+airflowDbCleanup:
+  enabled: true
+  # Run on the 1st of every month at midnight
+  schedule: "0 0 1 * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  # Secret created by the Airflow subchart containing the metadata DB connection URL.
+  # Defaults to "{release-name}-airflow-metadata" if not set.
+  connectionSecretName: ""
+  # Override the full command to customise the retention period or any other argument.
+  command:
+    - /bin/bash
+    - -c
+    - >-
+      airflow db clean
+      --clean-before-timestamp=$(date -d '1 year ago' +%Y-%m-%dT%H:%M:%S+00:00)
+      -y
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
 
 volumes:
   storage_class_name: default
