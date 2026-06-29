@@ -34,6 +34,24 @@ spec:
     {{- end }}
       http:
         paths:
+          {{- if $.Values.georchestra.webapps.datahub.enabled }}
+          - path: /datahub
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "georchestra.fullname" $ }}-datahub-svc
+                port:
+                  number: 80
+          {{- end }}
+          {{- if $.Values.georchestra.webapps.metadata_editor.enabled }}
+          - path: /metadata-editor
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "georchestra.fullname" $ }}-metadata-editor-svc
+                port:
+                  number: 80
+          {{- end }}
           - path: /
             pathType: Prefix
             backend:

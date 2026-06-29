@@ -1,0 +1,83 @@
+{{- $webapp := .Values.georchestra.webapps.datahub -}}
+{{- if $webapp.enabled -}}
+{{- $podAnnotations := merge (dict) .Values.podAnnotations (default dict $webapp.podAnnotations) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "georchestra.fullname" . }}-datahub
+  labels:
+    {{- include "georchestra.labels" . | nindent 4 }}
+    app.kubernetes.io/component: {{ include "georchestra.fullname" . }}-datahub
+spec:
+  replicas: {{ $webapp.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "georchestra.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: {{ include "georchestra.fullname" . }}-datahub
+  template:
+    metadata:
+      labels:
+        {{- include "georchestra.selectorLabels" . | nindent 8 }}
+        org.georchestra.service/name: {{ include "georchestra.fullname" . }}-datahub
+        app.kubernetes.io/component: {{ include "georchestra.fullname" . }}-datahub
+      {{- with $podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+        {{- with .Values.georchestra.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      initContainers:
+      {{ include "georchestra.bootstrap_georchestra_datadir" . | nindent 6 }}
+      containers:
+      - name: georchestra-datahub
+        image: {{ include "georchestra.webappImage" $webapp }}
+        imagePullPolicy: {{ include "georchestra.webappImagePullPolicy" $webapp }}
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+          {{- include "georchestra.common-envs" . | nindent 10 }}
+          - name: ASSETS_DIRECTORY_OVERRIDE
+            value: /etc/georchestra/datahub/assets
+          - name: CONFIG_DIRECTORY_OVERRIDE
+            value: /etc/georchestra/datahub/conf
+          - name: CUSTOM_SCRIPTS_DIRECTORY
+            value: /etc/georchestra/datahub/scripts
+          {{- if $webapp.extra_environment }}
+          {{- $webapp.extra_environment | toYaml | nindent 10 }}
+          {{- end }}
+        volumeMounts:
+          - mountPath: /etc/georchestra
+            name: georchestra-datadir
+        {{- if and $webapp.probes $webapp.probes.livenessProbe }}
+        livenessProbe:
+          {{- $webapp.probes.livenessProbe | toYaml | nindent 10 }}
+        {{- end }}
+        {{- if and $webapp.probes $webapp.probes.readinessProbe }}
+        readinessProbe:
+          {{- $webapp.probes.readinessProbe | toYaml | nindent 10 }}
+        {{- end }}
+        {{- if and $webapp.probes $webapp.probes.startupProbe }}
+        startupProbe:
+          {{- $webapp.probes.startupProbe | toYaml | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml $webapp.resources | nindent 10 }}
+      volumes:
+      - name: georchestra-datadir
+        emptyDir: {}
+      {{- if .Values.georchestra.datadir.git.ssh_secret }}
+      - name: ssh-secret
+        secret:
+          secretName: {{ .Values.georchestra.datadir.git.ssh_secret }}
+          defaultMode: 0400
+      {{- end }}
+      {{- if $webapp.tolerations }}
+      tolerations:
+        {{- $webapp.tolerations | toYaml | nindent 8 }}
+      {{- end }}
+{{- end }}

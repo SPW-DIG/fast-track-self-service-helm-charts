@@ -124,6 +124,90 @@ georchestra:
           memory: 128Mi
         limits:
           memory: 128Mi
+    datahub:
+      enabled: true
+      replicaCount: "1"
+      image:
+        repository: geonetwork/geonetwork-ui-datahub
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
+      probes:
+        livenessProbe:
+          httpGet:
+            path: /datahub/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /datahub/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+        startupProbe:
+          httpGet:
+            path: /datahub/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+    metadata_editor:
+      enabled: false
+      replicaCount: "1"
+      image:
+        repository: geonetwork/geonetwork-ui-metadata-editor
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
+      probes:
+        livenessProbe:
+          httpGet:
+            path: /metadata-editor/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /metadata-editor/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+        startupProbe:
+          httpGet:
+            path: /metadata-editor/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
     geonetwork:
       enabled: true
       replicaCount: "1"
