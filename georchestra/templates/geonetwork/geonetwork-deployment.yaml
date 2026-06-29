@@ -53,6 +53,8 @@ spec:
         - containerPort: 8080
           name: http-proxy
         env:
+          - name: JAVA_OPTIONS
+            value: "-Dorg.eclipse.jetty.annotations.AnnotationParser.LEVEL=OFF -Xms1G -Xmx1G"
           {{- include "georchestra.database-georchestra-envs" . | nindent 10  }}
           {{- include "georchestra.service-envs" . | nindent 10 }}
           - name: ES_USERNAME
@@ -88,7 +90,7 @@ spec:
           tcpSocket:
             port: 8080
           failureThreshold: 5
-          periodSeconds: 50
+          periodSeconds: 120
         {{- end }}
         resources:
           {{- toYaml $webapp.resources | nindent 10 }}
