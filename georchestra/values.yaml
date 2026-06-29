@@ -81,7 +81,7 @@ georchestra:
         limits:
           memory: 1Gi
     datafeeder:
-      enabled: true  # won't deploy if datafeeder_frontend is not enable
+      enabled: false  # won't deploy if datafeeder_frontend is not enable
       replicaCount: "1"
       image:
         repository: georchestra/datafeeder
