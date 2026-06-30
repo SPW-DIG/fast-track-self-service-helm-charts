@@ -167,7 +167,7 @@ georchestra:
           failureThreshold: 10
           successThreshold: 1
     metadata_editor:
-      enabled: false
+      enabled: true
       replicaCount: "1"
       image:
         repository: geonetwork/geonetwork-ui-metadata-editor
