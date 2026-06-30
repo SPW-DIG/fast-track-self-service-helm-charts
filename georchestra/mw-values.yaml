@@ -1,0 +1,724 @@
+georchestra:
+  # Set additional nodeSelector items
+  nodeSelector: {}
+    # "georchestra": "true"
+  webapps:
+    # Note: if a secret is needed to fetch the images from a private registry,
+    # it can be specified using the "registry_secret" value on each images.
+    #
+    # If images are publicly available, the parameter should be left commented
+    # out.
+    #
+    # Set replicaCount to "0" to turn off an app for maintenance as discussed
+    # in https://github.com/georchestra/helm-charts/issues/42.
+    # For all the apps, setting a replica count of more than 1 is not supported
+    # by the helm chart (cardinality 0..1).
+    analytics:
+      enabled: false
+      replicaCount: "1"
+      image:
+        repository: georchestra/analytics
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      # registry_secret: default
+      service:
+        annotations: {}
+      tolerations: []
+      # Example webapp probes override :
+      # probes:
+      #   livenessProbe:
+      #     httpGet:
+      #       path: /analytics/
+      #       port: 8080
+      #     periodSeconds: 10
+      #   startupProbe:
+      #     tcpSocket:
+      #       port: 8080
+      #     failureThreshold: 5
+      #     periodSeconds: 10
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 512Mi
+    cas:
+      enabled: false
+      replicaCount: "1"
+      image:
+        repository: georchestra/cas
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      # registry_secret: default
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 100m
+          memory: 1256Mi
+        limits:
+          memory: 1256Mi
+    console:
+      enabled: true
+      replicaCount: "1"
+      image:
+        repository: georchestra/console
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      lifecycle: {}
+      # registry_secret: default
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 100m
+          memory: 1Gi
+        limits:
+          memory: 1Gi
+    datafeeder:
+      enabled: false  # won't deploy if datafeeder_frontend is not enable
+      replicaCount: "1"
+      image:
+        repository: georchestra/datafeeder
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      # - name: SMTPHOST
+      #   value: "my_smtp_host"
+      # - name: SMTPPORT
+      #   value: "25"
+      # registry_secret: default
+      envsubst:
+        enabled: true
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 512Mi
+    datafeeder_frontend:
+      # Matches datafeeder/import-xxx.yaml templates in the helm chart
+      enabled: true  # won't deploy if datafeeder is not enable
+      replicaCount: "1"
+      image:
+        repository: georchestra/datafeeder-frontend
+        pullPolicy: IfNotPresent
+        tag: latest
+      lifecycle: {}
+      extra_environment: []
+      # registry_secret: default
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
+    datahub:
+      enabled: true
+      replicaCount: "1"
+      image:
+        repository: geonetwork/geonetwork-ui-datahub
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
+      probes:
+        livenessProbe:
+          httpGet:
+            path: /datahub/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /datahub/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+        startupProbe:
+          httpGet:
+            path: /datahub/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+    metadata_editor:
+      enabled: false
+      replicaCount: "1"
+      image:
+        repository: geonetwork/geonetwork-ui-metadata-editor
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
+      probes:
+        livenessProbe:
+          httpGet:
+            path: /metadata-editor/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /metadata-editor/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+        startupProbe:
+          httpGet:
+            path: /metadata-editor/
+            port: 80
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+          successThreshold: 1
+    geonetwork:
+      enabled: true
+      replicaCount: "1"
+      image:
+        repository: georchestra/geonetwork
+        pullPolicy: IfNotPresent
+        tag: latest
+      # the registry secret is only used for the GeoNetwork image
+      # registry_secret: default
+      extra_environment: []
+      # volumes is the deployment-compliant specification of the pod's extra volume
+      # It should match with an item from the extra_volumeName.name variable below.
+      extra_volumes: []
+      # volumeMounts is the deployment-compliant specification of the georchestra-GeoNetwork
+      # container extra volume. It should match an item from the extra_volumes.name
+      # variable above.
+      extra_volumeMounts: []
+      tolerations: []
+      resources:
+        requests:
+          cpu: 200m
+          memory: 1512Mi
+        limits:
+          cpu: 2000m
+          memory: 1512Mi
+      elasticsearch:
+        enabled: true
+        replicaCount: "1"
+        image:
+          repository: docker.elastic.co/elasticsearch/elasticsearch
+          pullPolicy: IfNotPresent
+          tag: "8.14.3"
+        service:
+          annotations: {}
+        tolerations: []
+        # Password of the elastic user
+        elasticPassword: changeme
+        resources:
+          requests:
+            cpu: 200m
+            memory: 1512Mi
+          limits:
+            cpu: 2000m
+            memory: 1512Mi
+      kibana:
+        enabled: false
+        replicaCount: "1"
+        image:
+          repository: docker.elastic.co/kibana/kibana
+          pullPolicy: IfNotPresent
+          tag: "8.14.3"
+        service:
+          annotations: {}
+        tolerations: []
+        # The password that you set using bin/elasticsearch-reset-password -u kibana_system
+        kibanaSystemPassword: ""
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1Gi
+          limits:
+            memory: 1Gi
+        # For configuring external kibana with geonetwork
+        # host: mykibana
+        # port: myport
+      # automatically clean some logs of geonetwork
+      housekeeping:
+        harvester_logs:
+          enabled: false
+          schedule: "0 1 * * *"
+        tolerations: []
+        resources: {}
+      service:
+        annotations: {}
+    geoserver:
+      enabled: true
+      replicaCount: "1"
+      image:
+        repository: georchestra/geoserver
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      # volumes is the deployment-compliant specification of the pod's extra volume
+      # It should match with an item from the extra_volumeName.name variable below.
+      extra_volumes: []
+      # volumeMounts is the deployment-compliant specification of the georchestra-GeoNetwork
+      # container extra volume. It should match an item from the extra_volumes.name
+      # variable above.
+      extra_volumeMounts: []
+      tolerations: []
+      # registry_secret: default
+      service:
+        annotations: {}
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 2Gi
+        limits:
+          cpu: 4000m
+          memory: 2Gi
+    geowebcache:
+      enabled: false
+      replicaCount: "1"
+      envsubst:
+        enabled: true
+      image:
+        repository: georchestra/geowebcache
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      tolerations: []
+      service:
+        annotations: {}
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2Gi
+        limits:
+          cpu: 2000m
+          memory: 2Gi
+    header:
+      enabled: false
+      replicaCount: "1"
+      image:
+        repository: georchestra/header
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      tolerations: []
+      # registry_secret: default
+      service:
+        annotations: {}
+      resources:
+        requests:
+          cpu: 50m
+          memory: 512Mi
+        limits:
+          memory: 512Mi
+    mapstore:
+      enabled: true
+      replicaCount: "1"
+      image:
+        repository: georchestra/mapstore
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      tolerations: []
+      command: []
+      args: []
+      lifecycle: {}
+      service:
+        annotations: {}
+      resources:
+        requests:
+          cpu: 100m
+          memory: 1Gi
+        limits:
+          memory: 1Gi
+    openldap:
+      enabled: true
+      replicaCount: "1"
+      image:
+        repository: georchestra/ldap
+        pullPolicy: IfNotPresent
+        tag: latest
+      extraVolumeMounts: []
+      #  - name: copy-portal-skins
+      #   mountPath: /var/lib/lemonldap-ng/portal/skins
+      extraVolumes: []
+      #  - name: copy-portal-skins
+      #    emptyDir: {}
+      extraContainers:
+      #  - name: my-sidecar
+      #    image: nginx:latest
+      # registry_secret: default
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 100m
+          memory: 1Gi
+        limits:
+          memory: 1Gi
+    proxy:
+      enabled: false
+      replicaCount: "1"
+      image:
+        repository: georchestra/security-proxy
+        pullPolicy: IfNotPresent
+        tag: latest
+      extra_environment: []
+      # registry_secret: default
+      envsubst:
+        enabled: true
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1Gi
+        limits:
+          cpu: 4000m
+          memory: 1Gi
+    gateway:
+      enabled: true
+      replicaCount: "1"
+      image:
+        repository: georchestra/gateway
+        pullPolicy: IfNotPresent
+        tag: latest
+      environment:
+        JAVA_TOOL_OPTIONS: "-Dgeorchestra.datadir=/etc/georchestra"
+      extra_environment: []
+      analytics:
+        enabled: false
+        otlpEndpoint: "http://analytics-vector-svc:4317"
+      service:
+        annotations: {}
+      tolerations: []
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1Gi
+        limits:
+          cpu: 4000m
+          memory: 1Gi
+  datadir:
+    volume:
+    - name: georchestra-datadir
+      emptyDir: {}
+    git:
+      url: https://github.com/georchestra/datadir.git
+      ref: docker-master
+      # ssh_secret: my-private-ssh-key
+  # Some cloud providers automatically create & assign PVs to PVCs
+  # some other need to create a PV first ; if so, then you can
+  # use the `pv_name` entries below.
+  storage:
+    # Example storage block :
+    # <reference>:
+    #   pv_name: Optional - If set will use this existing PV to generate PVC
+    #   existingClaim: Optional - If set, the chart will not create the PVC and will reference this existing one (override pv_name)
+    #   size: Required - Size of the storage (in Gi, Mi)
+    #   storage_class_name: default or "-" for empty storageClassName
+    #   accessModes: Optional - If set will override the general value for this storage
+    #   - ReadWriteOnce|ReadOnlyMany|ReadWriteMany
+    #   labels: Optional - Map of extra labels to apply to the generated PVC
+    #     (e.g. velero.io/exclude-from-backup: "true" to skip filesystem backup).
+    #     Merged on top of chart defaults; user keys win on conflict.
+    #   annotations: Optional - Map of extra annotations to apply to the generated PVC.
+    gn4_es:
+      size: 2Gi
+    geonetwork_datadir:
+      size: 2Gi
+    geoserver_datadir:
+      size: 256Mi
+    geoserver_geodata:
+      size: 2Gi
+    mapstore_datadir:
+      size: 256Mi
+    openldap_data:
+      size: 256Mi
+    openldap_config:
+      size: 1Mi
+    geoserver_tiles:
+      size: 2Gi
+    geowebcache_tiles:
+      size: 5Gi
+    # We also might need to specify a default custom storageClass
+    # Leave it commented if not needed
+    # storage_class_name: default or "-" for empty storageClassName
+    accessModes:
+    - ReadWriteOnce
+  smtp_smarthost:
+    enabled: true
+    # mailname: georchestra-127-0-1-1.traefik.me
+    # postmaster: postmaster@georchestra-127-0-1-1.traefik.me
+    # relay_host: my-external-smtp
+    # relay_port: 25
+    # relay_username:  aaaa
+    # relay_password:  aaaa
+    image:
+      repository: georchestra/exim
+      pullPolicy: IfNotPresent
+      tag: "20251120"
+    extra_environment: []
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        memory: 64Mi
+
+fqdn: "georchestra-127-0-0-1.nip.io"
+
+ingress:
+  enabled: true
+  annotations: {}
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts: []
+  #  - host: georchestra-127-0-1-1.traefik.me
+  tls: []
+  # You can import TLS secrets using
+  # kubectl create secret tls testsecret --key key.pem --cert cert.pem
+  # Then specify the TLS secret name below.
+  #  - secretName: testsecret
+  #    hosts:
+  #      - georchestra-127-0-1-1.traefik.me
+  # define a custom incressClassName, like "traefik" or "nginx"
+  className: "nginx"
+
+ldap:
+  # host: "myldaphost" # uncomment for external host
+  port: "389"
+  adminPassword: "secret"
+  scheme: "ldap"
+  baseDn: "dc=georchestra,dc=org"
+  usersRdn: "ou=users"
+  adminDn: "cn=admin,dc=georchestra,dc=org"
+  rolesRdn: "ou=roles"
+  orgsRdn: "ou=orgs"
+  # By default, a secret is automatically created with the password declared above.
+  # You can override this by using an existingSecret declaring some environment variables
+  # and that should at least declare the ldap admin password
+  # Example of valid secret content (limited to the data part) would be
+  # "data": {
+  #     "SLAPD_PASSWORD": "mysecretldapadminpasswor_base64encoded"
+  # },
+  # Optionally, you can also provide the GEORCHESTRA_PRIVILEGED_USER_PASSWORD env var, that will
+  # be used to replace the default one on first run, see https://github.com/georchestra/georchestra/blob/master/ldap/docker-root/docker-entrypoint.d/01-populate#L47-L54
+  # existingSecret: mysecretldapenvvars
+
+# When using external ElasticSearch
+# Set parameters used by the apps (only geonetwork for now)
+elasticsearch: {}
+  # host: myhost
+  # port: myport
+  # username: myusername
+  # password: mypassword
+
+database:
+  builtin: true
+  image:  # section of parameters for builtin database
+    repository: georchestra/database
+    tag: latest
+  auth:
+    database: georchestra
+    # If using an existing secret: this one will both be used by the bitnami chart managing the DB
+    # and by the georchestra db secret
+    # (https://github.com/georchestra/helm-charts/blob/main/georchestra/templates/database/database-georchestra-secret.yaml)
+    # that is used by the apps
+    # So you must be quite careful. It should follow the pattern from the previsouly mentioned secret
+    # and tell the bitnami chart which variable provide the user and password
+    # And the `database`, `username` and `ssl` params still have to be defined here and match the ones
+    # provided by the secret
+    # existingSecret: mysecret
+    # secretKeys:
+    #   adminPasswordKey: postgresPassword
+    #   userPasswordKey: password # This one should stay as it is
+#   host: georchestra
+    password: georchestra
+    postgresPassword: georchestra
+    port: "5432"
+    ssl: false
+    username: georchestra
+  primary:  # section of parameters for builtin database
+    startupProbe:
+      enabled: true
+    containerSecurityContext:
+      readOnlyRootFilesystem: false
+    persistentVolumeClaimRetentionPolicy:
+      enabled: true
+    extraVolumeMounts:
+      - name: "00-initsql"
+        mountPath: "/docker-entrypoint-initdb.d/00_init.sql"
+        subPath: "00_init.sql"
+    extraVolumes:
+      - name: "00-initsql"
+        configMap:
+          name: "{{ .Release.Name }}-database-init"
+    initdb:
+      username: georchestra
+      password: georchestra
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        memory: 512Mi
+  geodata:
+    auth:
+      database: geodata
+      # If using the builtin database, you cannot use an existingSecret configuration: the init script (see above)
+      # is only able to use the basic yaml params.
+      # If using an existing secret: this one will need to match the pattern followed by
+      # https://github.com/georchestra/helm-charts/blob/main/templates/database/database-geodata-secret.yaml
+      # The other configuration params will not be used.
+      # existingSecret: mysecret
+      host: geodata
+      password: geodata
+      port: "5432"
+      ssl: false
+      username: geodata
+  datafeeder:
+    auth:
+      database: datafeeder
+      # If using the builtin database, you cannot use an existingSecret configuration: the init script (see above)
+      # is only able to use the basic yaml params.
+      # If using an existing secret: this one will need to match the pattern followed by
+      # https://github.com/georchestra/helm-charts/blob/main/templates/database/database-datafeeder-secret.yaml
+      # The other configuration params will not be used.
+      # existingSecret: mysecret
+      host: datafeeder
+      port: "5432"
+      ssl: false
+      password: datafeeder
+      username: datafeeder
+
+redis:
+  enabled: false
+  image:
+    repository: valkey/valkey
+    tag: 9.0.4-alpine
+    pullPolicy: IfNotPresent
+  auth:
+    password: georchestra
+#   host: redis  # for external redis - if set, builtin redis deployment is disabled
+    port: "6379"
+#   existingSecret: mysecret
+  extraEnv: []
+  tolerations: []
+  podAnnotations: {}
+  # registry_secret: default
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  # Storage configuration - always creates a PVC when redis is built-in
+  # Specify pvName to bind to an existing PV, otherwise dynamically provisions
+  storage:
+    # pvName: redis-data  # Optional: name of existing PV to bind to
+    # storageClassName: default  # Optional: storage class name
+    # labels: {}        # Optional: extra labels merged onto the PVC (user keys win)
+    # annotations: {}   # Optional: annotations applied to the PVC
+    accessModes:
+    - ReadWriteOnce
+    size: 1Gi
+
+rabbitmq:
+  enabled: false
+  image:
+    repository: rabbitmq
+    tag: 3.13-alpine
+    pullPolicy: IfNotPresent
+  auth:
+    username: georchestra
+    password: georchestra
+    erlangCookie: georchestra
+#   host: rabbitmq  # for external rabbitmq - if set, builtin rabbitmq deployment is disabled
+    port: "5672"
+#   existingSecret: mysecret
+  extra_environment: []
+  tolerations: []
+  podAnnotations: {}
+  # registry_secret: default
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+  # Storage configuration - always creates a PVC
+  # Specify pv_name to bind to an existing PV, otherwise dynamically provisions
+  storage:
+    # pv_name: rabbitmq-data  # Optional: name of existing PV to bind to
+    # storage_class_name: default  # Optional: storage class name
+    # labels: {}        # Optional: extra labels merged onto the PVC (user keys win)
+    # annotations: {}   # Optional: annotations applied to the PVC
+    accessModes:
+    - ReadWriteOnce
+    size: 1Gi
+
+# Allow to override /etc/hosts for ALL apps
+# https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/
+hostAliases: []
+# - ip: "127.0.0.1"
+#   hostnames:
+#   - "host.alias.com"
+
+tooling:
+  # Global image used for toolbox: chmod + git clone
+  general:
+    image:
+      repository: alpine/git
+      tag: 2.49.1
+  envsubst:
+    image:
+      repository: georchestra/k8s-initcontainer-envsubst
+      tag: latest
+  # Fix the permissions for the PVCs at midnight
+  fixPermissionsPvc:
+    schedule: "0 0 * * *"
+    tolerations: []
+    podAnnotations: {}
+
+
+# Annotations for all pods, can be merge/override for each webapp, and also smtp smarthost and rabbitmq
+# For builtin database use them under database.primary
+podAnnotations: {}
