@@ -106,7 +106,7 @@ georchestra:
           memory: 512Mi
     datafeeder_frontend:
       # Matches datafeeder/import-xxx.yaml templates in the helm chart
-      enabled: true  # won't deploy if datafeeder is not enable
+      enabled: false  # won't deploy if datafeeder is not enable
       replicaCount: "1"
       image:
         repository: georchestra/datafeeder-frontend
