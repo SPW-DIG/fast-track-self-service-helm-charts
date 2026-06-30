@@ -38,5 +38,12 @@ spec:
                 name: {{ $fullName }}-svc
                 port:
                   name: http
+          - path: /dataset
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}-svc
+                port:
+                  name: http
     {{- end }}
 {{- end }}
