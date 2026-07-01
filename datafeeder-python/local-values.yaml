@@ -45,13 +45,22 @@ backend:
   # You also need to configure an external database for Airflow, otherwise it uses
   # the internal PostgreSQL database.
   database:
-    existingSecret: "georchestra-database-georchestra-secret"
+    existingSecret: ""
+    dbname: georchestra
+    host: georchestra-database
+    password: georchestra
+    postgresPassword: georchestra
+    port: "5432"
+    ssl: false
+    username: georchestra
   data_db:
-    existingSecret: "datafeeder-python-database-backend"
+    # Points to the secret created by the georchestra chart (release name "georchestra") at
+    # georchestra/templates/database/database-datafeeder-secret.yaml
+    existingSecret: "georchestra-database-datafeeder-secret"
   datadir:
     git:
-      url: https://github.com/georchestra/datadir.git
-      ref: "25.0"
+      url: "https://github.com/georchestra/datadir.git"
+      ref: "docker-master"
       ssh_secret: ""
 
   config:
@@ -243,7 +252,7 @@ airflow:
       # secretKeys:
       #   adminPasswordKey: postgresPassword
       #   userPasswordKey: password # This one should stay as it is
-  #   host: georchestra
+      host: georchestra
       password: georchestra
       postgresPassword: georchestra
       port: "5432"

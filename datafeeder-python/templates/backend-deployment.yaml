@@ -115,7 +115,12 @@ spec:
         {{- end }}
       volumes:
       - name: georchestra-datadir
+        {{- if .Values.backend.datadir.git.url }}
         emptyDir: {}
+        {{- else }}
+        configMap:
+          name: {{ include "datafeeder-python.fullname" . }}-datadir
+        {{- end }}
       - name: temp-backend
         emptyDir: {}
       {{- if .Values.backend.datadir.git.ssh_secret }}
