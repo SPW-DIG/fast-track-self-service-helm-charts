@@ -100,22 +100,12 @@ spec:
         {{ toYaml $webapp.extraContainers | nindent 6 }}
       {{- end }}
       volumes:
-      - name: openldap-data
-        {{- if eq $webapp.persistentStorage false }}
-        emptyDir:
-          medium: Memory
-        {{- else }}
-        persistentVolumeClaim:
-          claimName: {{ include "georchestra.storage.claimName" (list . "openldap_data") }}
-        {{- end }}
-      - name: openldap-config
-        {{- if eq $webapp.persistentStorage false }}
-        emptyDir:
-          medium: Memory
-        {{- else }}
-        persistentVolumeClaim:
-          claimName: {{ include "georchestra.storage.claimName" (list . "openldap_config") }}
-        {{- end }}
+        - name: openldap-data
+          persistentVolumeClaim:
+            claimName: {{ include "georchestra.storage.claimName" (list . "openldap_data") }}
+        - name: openldap-config
+          persistentVolumeClaim:
+            claimName: {{ include "georchestra.storage.claimName" (list . "openldap_config") }}
       {{- if $webapp.extraVolumes }}
           {{- toYaml $webapp.extraVolumes | nindent 6 }}
       {{- end }}

@@ -1,6 +1,6 @@
 {{- $webapp := .Values.georchestra.webapps.openldap -}}
 {{- $webapp_storage := .Values.georchestra.storage.openldap_data -}}
-{{- if and $webapp.enabled (not $webapp_storage.existingClaim) (not (eq $webapp.persistentStorage false)) -}}
+{{- if and $webapp.enabled (not $webapp_storage.existingClaim) -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
