@@ -1,4 +1,5 @@
 {{- define "georchestra.bootstrap_georchestra_datadir" -}}
+{{- if .Values.backend.datadir.git.url -}}
 - name: bootstrap-georchestra-datadir
   image: "{{ .Values.tooling.general.image.repository }}:{{ .Values.tooling.general.image.tag }}"
   securityContext:
@@ -27,4 +28,5 @@
   - mountPath: /ssh-secret
     name: ssh-secret
   {{- end }}
+{{- end -}}
 {{- end -}}

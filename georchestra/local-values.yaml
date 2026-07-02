@@ -369,10 +369,27 @@ georchestra:
     openldap:
       enabled: true
       replicaCount: "1"
+      # kind's default storage class (local-path-provisioner on overlayfs) causes
+      # OpenLDAP's mmap-based (LMDB) database to segfault. Use a tmpfs-backed
+      # emptyDir instead. LDAP data is lost on pod restart.
+      persistentStorage: false
       image:
         repository: georchestra/ldap
         pullPolicy: IfNotPresent
         tag: latest
+      # containerd/kind set an extremely high default RLIMIT_NOFILE (~2^31) on
+      # containers. The image's own entrypoint lowers this to a sane value, but
+      # only within the 00-init script's own process tree -- the sibling
+      # 01-populate script (which actually starts slapd to seed the database)
+      # doesn't inherit that fix and slapd segfaults immediately under the huge
+      # limit. Wrap the entrypoint so ulimit applies to the whole process tree.
+      command: ["/bin/bash", "-c"]
+      args:
+        - 'ulimit -n 1048576; exec /docker-entrypoint.sh "$@"'
+        - --
+        - sh
+        - -c
+        - 'exec slapd -d ${SLAPD_LOG_LEVEL:-32768} -u ${RUN_AS_UID} -g ${RUN_AS_GID}'
       extraVolumeMounts: []
       #  - name: copy-portal-skins
       #   mountPath: /var/lib/lemonldap-ng/portal/skins
@@ -391,7 +408,7 @@ georchestra:
           cpu: 100m
           memory: 1Gi
         limits:
-          memory: 1Gi
+          memory: 2Gi
     proxy:
       enabled: false
       replicaCount: "1"
@@ -444,6 +461,7 @@ georchestra:
       url: https://github.com/georchestra/datadir.git
       ref: docker-master
       # ssh_secret: my-private-ssh-key
+      insecureSkipTlsVerify: true
   # Some cloud providers automatically create & assign PVs to PVCs
   # some other need to create a PV first ; if so, then you can
   # use the `pv_name` entries below.

@@ -61,7 +61,7 @@ spec:
             path: /console/account/new
             port: 8080
           periodSeconds: 10
-          timeoutSeconds: 3
+          timeoutSeconds: 30
         {{- end }}
         {{- if and $webapp.probes $webapp.probes.readinessProbe }}
         readinessProbe:

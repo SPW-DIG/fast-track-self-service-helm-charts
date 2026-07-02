@@ -1,3 +1,4 @@
+
 {{- $webapp := .Values.georchestra.webapps.openldap -}}
 {{- if $webapp.enabled -}}
 {{- $podAnnotations := merge (dict) .Values.podAnnotations (default dict $webapp.podAnnotations) }}
@@ -36,6 +37,14 @@ spec:
       - name: georchestra-ldap
         image: {{ include "georchestra.webappImage" $webapp }}
         imagePullPolicy: {{ include "georchestra.webappImagePullPolicy" $webapp }}
+        {{- if $webapp.command }}
+        command:
+          {{- toYaml $webapp.command | nindent 10 }}
+        {{- end }}
+        {{- if $webapp.args }}
+        args:
+          {{- toYaml $webapp.args | nindent 10 }}
+        {{- end }}
         env:
           - name: SLAPD_ORGANISATION
             value: georchestra
@@ -92,11 +101,21 @@ spec:
       {{- end }}
       volumes:
       - name: openldap-data
+        {{- if eq $webapp.persistentStorage false }}
+        emptyDir:
+          medium: Memory
+        {{- else }}
         persistentVolumeClaim:
           claimName: {{ include "georchestra.storage.claimName" (list . "openldap_data") }}
+        {{- end }}
       - name: openldap-config
+        {{- if eq $webapp.persistentStorage false }}
+        emptyDir:
+          medium: Memory
+        {{- else }}
         persistentVolumeClaim:
           claimName: {{ include "georchestra.storage.claimName" (list . "openldap_config") }}
+        {{- end }}
       {{- if $webapp.extraVolumes }}
           {{- toYaml $webapp.extraVolumes | nindent 6 }}
       {{- end }}

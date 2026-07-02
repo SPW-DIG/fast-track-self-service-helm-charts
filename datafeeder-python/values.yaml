@@ -57,7 +57,7 @@ backend:
     existingSecret: ""
   datadir:
     git:
-      url: https://github.com/georchestra/datadir.git
+      url: ""
       ref: docker-master
       ssh_secret: ""
   config:

@@ -81,7 +81,7 @@ georchestra:
         limits:
           memory: 1Gi
     datafeeder:
-      enabled: false  # won't deploy if datafeeder_frontend is not enable
+      enabled: false  # disabled in favour of datafeeder-python chart
       replicaCount: "1"
       image:
         repository: georchestra/datafeeder
@@ -106,7 +106,7 @@ georchestra:
           memory: 512Mi
     datafeeder_frontend:
       # Matches datafeeder/import-xxx.yaml templates in the helm chart
-      enabled: true  # won't deploy if datafeeder is not enable
+      enabled: false  # disabled in favour of datafeeder-python chart
       replicaCount: "1"
       image:
         repository: georchestra/datafeeder-frontend
@@ -369,6 +369,11 @@ georchestra:
     openldap:
       enabled: true
       replicaCount: "1"
+      # Set to false to use a tmpfs-backed emptyDir instead of a PVC.
+      # Useful on storage backends where OpenLDAP's mmap-based (LMDB) database
+      # segfaults, e.g. local-path-provisioner on overlayfs (common on kind clusters).
+      # LDAP data is lost on pod restart when disabled.
+      persistentStorage: true
       image:
         repository: georchestra/ldap
         pullPolicy: IfNotPresent
@@ -444,6 +449,7 @@ georchestra:
       url: https://github.com/georchestra/datadir.git
       ref: docker-master
       # ssh_secret: my-private-ssh-key
+      insecureSkipTlsVerify: false
   # Some cloud providers automatically create & assign PVs to PVCs
   # some other need to create a PV first ; if so, then you can
   # use the `pv_name` entries below.

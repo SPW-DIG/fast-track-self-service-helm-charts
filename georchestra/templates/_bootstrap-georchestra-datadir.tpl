@@ -13,10 +13,16 @@
     if [ ! -f /etc/georchestra/default.properties ] ; then
       git clone --depth 1 --single-branch {{ .Values.georchestra.datadir.git.url }} -b {{ .Values.georchestra.datadir.git.ref }} /etc/georchestra ;
     fi ;
-  {{- if .Values.georchestra.datadir.git.ssh_secret }}
+  {{- if or .Values.georchestra.datadir.git.ssh_secret .Values.georchestra.datadir.git.insecureSkipTlsVerify }}
   env:
+    {{- if .Values.georchestra.datadir.git.ssh_secret }}
     - name: GIT_SSH_COMMAND
       value: ssh -o "IdentitiesOnly=yes" -o "StrictHostKeyChecking no"
+    {{- end }}
+    {{- if .Values.georchestra.datadir.git.insecureSkipTlsVerify }}
+    - name: GIT_SSL_NO_VERIFY
+      value: "true"
+    {{- end }}
   {{- end }}
   volumeMounts:
   - mountPath: /etc/georchestra
