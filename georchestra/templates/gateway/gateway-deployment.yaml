@@ -41,6 +41,11 @@ spec:
             value: {{ $webapp.environment.JAVA_TOOL_OPTIONS }}
           {{- include "georchestra.service-envs" . | nindent 10 }}
           {{- include "georchestra.common-envs" . | nindent 10 }}
+          {{- /* Workaround: this cluster's cloned datadir gateway/routes.yaml has a typo (missing "$")
+                 in the metadata-editor.target placeholder, so it's never substituted. Override
+                 the resolved property directly until upstream fixes it. */}}
+          - name: GEORCHESTRA_GATEWAY_SERVICES_METADATA_EDITOR_TARGET
+            value: "http://{{ include "georchestra.fullname" . }}-metadata-editor-svc:80/metadata-editor/"
           {{- include "georchestra.ldap-envs" . | nindent 10 }}
           {{- include "georchestra.database-georchestra-envs" . | nindent 10 }}
           {{- if .Values.rabbitmq.enabled -}}

@@ -48,9 +48,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "georchestra.fullname" $ }}-metadata-editor-svc
+                {{- if $.Values.georchestra.webapps.gateway.enabled }}
+                name: {{ include "georchestra.fullname" $ }}-gateway-svc
+                {{- else }}
+                name: {{ include "georchestra.fullname" $ }}-sp-svc
+                {{- end }}
                 port:
-                  number: 80
+                  number: 8080
           {{- end }}
           - path: /
             pathType: Prefix

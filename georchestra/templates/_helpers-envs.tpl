@@ -24,6 +24,8 @@ Insert service host environment variables
   value: "{{ include "georchestra.fullname" . }}-import-svc"
 - name: DATAHUB_HOST
   value: "{{ include "georchestra.fullname" . }}-datahub-svc"
+- name: METADATA_EDITOR_HOST
+  value: "{{ include "georchestra.fullname" . }}-metadata-editor-svc"
 - name: ES_HOST
   value: "{{ .Values.elasticsearch.host | default (include "georchestra.fullname" .) }}-gn4-elasticsearch-svc"
 - name: ES_PORT
