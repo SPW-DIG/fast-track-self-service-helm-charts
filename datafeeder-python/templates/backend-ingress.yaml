@@ -8,10 +8,11 @@ metadata:
   name: {{ $fullName }}-backend
   labels:
     {{- include "datafeeder-python.labels" . | nindent 4 }}
-  {{- with $ingress.annotations }}
   annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    {{- with $ingress.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   {{- with $ingress.className }}
   ingressClassName: {{ . }}
@@ -31,8 +32,8 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          - path: /datafeeder-backend
-            pathType: Prefix
+          - path: /datafeeder-backend(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: {{ $fullName }}-backend-svc
