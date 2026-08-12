@@ -150,6 +150,19 @@ airflow:
   env:
     - name: AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION
       value: "False"
+    # The DAGs (dags/utils.py: get_data_sql_engine, get_datafeeder_pg_hook) look up
+    # these Airflow Connections by conn_id; neither exists by default, causing
+    # ingestion tasks to fail with "AirflowNotFoundException: The conn_id ... isn't
+    # defined". Airflow auto-registers a connection from any AIRFLOW_CONN_<CONN_ID>
+    # env var, no metadata DB entry needed. Values match the georchestra chart's
+    # database.datafeeder.auth (georchestra/local-values.yaml) -- the "datafeeder"
+    # database on the shared georchestra-database instance. get_datafeeder_pg_hook()
+    # forces schema="datafeeder" regardless of the URI path, but DATA_PG is used
+    # as-is so its path must already be the right database name.
+    - name: AIRFLOW_CONN_DATA_PG
+      value: "postgres://datafeeder:datafeeder@georchestra-database:5432/datafeeder"
+    - name: AIRFLOW_CONN_DATAFEEDER_PG
+      value: "postgres://datafeeder:datafeeder@georchestra-database:5432/datafeeder"
 
   redis:
     # To change
