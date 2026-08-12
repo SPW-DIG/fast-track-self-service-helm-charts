@@ -531,7 +531,11 @@ fqdn: "georchestra-127-0-0-1.nip.io"
 
 ingress:
   enabled: true
-  annotations: {}
+  annotations:
+    # nginx defaults to a 1m client_max_body_size, which rejects dataset uploads
+    # (CSV/Shapefile/GeoPackage) through datafeeder-backend with a 413 before the
+    # request even reaches the gateway/backend.
+    nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
   # kubernetes.io/ingress.class: nginx
   # kubernetes.io/tls-acme: "true"
   hosts: []
