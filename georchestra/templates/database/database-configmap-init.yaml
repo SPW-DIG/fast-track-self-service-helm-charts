@@ -21,4 +21,14 @@ data:
     CREATE SCHEMA datafeeder;
     CREATE SEQUENCE datafeeder.hibernate_sequence;
     GRANT ALL ON datafeeder.hibernate_sequence TO {{ $df.auth.username | quote }};
+    -- Used by the datafeeder-python backend/Airflow DAGs (dags/utils.py
+    -- get_staging_schema/get_data_schema): ingestion writes staging tables to
+    -- "staging" before the transformation step publishes them to "data" (or an
+    -- org-named schema, if USE_ORG_SCHEMA is set). The transformation step
+    -- auto-creates its target schema on demand, but ingestion does not, so
+    -- "staging" must already exist.
+    CREATE SCHEMA staging;
+    GRANT ALL ON SCHEMA staging TO {{ $df.auth.username | quote }};
+    CREATE SCHEMA data;
+    GRANT ALL ON SCHEMA data TO {{ $df.auth.username | quote }};
 {{- end }}
