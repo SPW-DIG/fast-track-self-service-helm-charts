@@ -647,7 +647,11 @@ database:
       # https://github.com/georchestra/helm-charts/blob/main/templates/database/database-datafeeder-secret.yaml
       # The other configuration params will not be used.
       # existingSecret: mysecret
-      host: datafeeder
+      # The "datafeeder" database is created by this chart's init script (see
+      # database-configmap-init.yaml) on the builtin georchestra-database
+      # pod/service -- confirmed live via psql \l, it doesn't exist on any other
+      # postgres instance in this deployment.
+      host: georchestra-database
       port: "5432"
       ssl: false
       password: datafeeder
