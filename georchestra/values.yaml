@@ -124,6 +124,19 @@ georchestra:
           memory: 128Mi
         limits:
           memory: 128Mi
+    # Points the gateway's datafeeder-backend/datafeeder-frontend routes (defined in
+    # georchestra-datadir's gateway/routes.yaml + gateway.yaml, both pre-existing
+    # upstream) at the datafeeder-python chart's services, which is deployed as a
+    # separate helm release (see ../../datafeeder-python).
+    # Only the backend needs to go through the gateway: /datafeeder-backend/** is a
+    # secured route (requires the IMPORT role) so the gateway can authenticate the
+    # request and inject sec-username/sec-org, which the datafeeder-python backend
+    # requires. The SPA shell at /datafeeder itself isn't gateway-routed (only
+    # /dataset/** is), so datafeeder-python's own frontend ingress should stay enabled.
+    datafeeder_python:
+      enabled: false
+      backendHost: datafeeder-python-backend-svc
+      frontendHost: datafeeder-python-svc
     datahub:
       enabled: true
       replicaCount: "1"

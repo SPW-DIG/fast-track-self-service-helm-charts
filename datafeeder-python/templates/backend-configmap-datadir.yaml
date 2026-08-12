@@ -1,0 +1,11 @@
+{{- if not .Values.backend.datadir.git.url }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "datafeeder-python.fullname" . }}-datadir
+  labels:
+    {{- include "datafeeder-python.labels" . | nindent 4 }}
+data:
+  default.properties: |
+    {{- .Files.Get "files/datadir/default.properties" | nindent 4 }}
+{{- end }}

@@ -1,0 +1,47 @@
+backend:
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: "georchestra-127-0-1-1.nip.io"
+
+  database:
+    existingSecret: "georchestra-database-georchestra-secret"
+
+  datadir:
+    local:
+      path: ""  # set to an absolute host path to skip git clone, e.g. /mnt/d/env/georchestra/datadir
+    git:
+      url: https://github.com/georchestra/datadir.git
+      ref: "25.0"
+
+  config:
+    dataPublicUrl: https://georchestra-127-0-1-1.nip.io/geoserver
+    metadataPublicUrl: https://georchestra-127-0-1-1.nip.io/geonetwork
+    secretKey: change-me
+    encryptionKey: change-me
+    frontend:
+      url: https://georchestra-127-0-1-1.nip.io/datafeeder
+    corsOrigins: http://localhost:5173
+    geoserver:
+      username: geoserver_privileged_user
+      password: change-me
+    geonetwork:
+      username: geoserver_privileged_user
+      password: change-me
+    airflow:
+      username: admin
+      password: change-me
+
+frontend:
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: "georchestra-127-0-1-1.nip.io"
+
+airflow:
+  redis:
+    password: georchestra
+  jwtSecret: "georchestra-datafeeder-jwt-secret"
+  fernetKey: "ZmDfcTF7_60GrrY167zsiPd67pEvs0aGOv2oasOM1Pg="

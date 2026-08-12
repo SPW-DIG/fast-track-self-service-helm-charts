@@ -46,6 +46,17 @@ spec:
                  the resolved property directly until upstream fixes it. */}}
           - name: GEORCHESTRA_GATEWAY_SERVICES_METADATA_EDITOR_TARGET
             value: "http://{{ include "georchestra.fullname" . }}-metadata-editor-svc:80/metadata-editor/"
+          {{- if .Values.georchestra.webapps.datafeeder_python.enabled }}
+          {{- /* georchestra-datadir's gateway/routes.yaml already defines datafeeder-backend
+                 and datafeeder-frontend routes (secured, require the IMPORT role) targeting
+                 http://${DATAFEEDER_BACKEND:datafeeder-backend}:8000/ and
+                 http://${DATAFEEDER_FRONTEND:datafeeder-frontend}:8080/ respectively.
+                 Point those hostnames at the datafeeder-python chart's services. */}}
+          - name: DATAFEEDER_BACKEND
+            value: "{{ .Values.georchestra.webapps.datafeeder_python.backendHost }}"
+          - name: DATAFEEDER_FRONTEND
+            value: "{{ .Values.georchestra.webapps.datafeeder_python.frontendHost }}"
+          {{- end }}
           {{- include "georchestra.ldap-envs" . | nindent 10 }}
           {{- include "georchestra.database-georchestra-envs" . | nindent 10 }}
           {{- if .Values.rabbitmq.enabled -}}

@@ -30,7 +30,11 @@ backend:
   extraVolumeMounts: []
   extraEnv: {}
   ingress:
-    enabled: true
+    # Disabled: traffic reaches the backend through the georchestra gateway instead
+    # (georchestra.webapps.datafeeder_python in the georchestra chart), so that the
+    # gateway authenticates requests and injects the sec-username/sec-org headers
+    # this backend requires. An ingress here would bypass that auth layer.
+    enabled: false
     className: "nginx"
     annotations: {}
     hosts:
@@ -116,6 +120,10 @@ frontend:
   extraVolumeMounts: []
   extraEnv: []
   ingress:
+    # Kept enabled: the SPA shell at /datafeeder isn't a route the gateway knows
+    # about (only /dataset/** and /datafeeder-backend/** are, per the datadir's
+    # gateway/routes.yaml), and serving static frontend assets doesn't need the
+    # sec-username/sec-org headers, so this can bypass the gateway safely.
     enabled: true
     className: "nginx"
     annotations: {}

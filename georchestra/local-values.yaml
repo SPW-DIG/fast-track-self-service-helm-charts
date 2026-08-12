@@ -124,6 +124,12 @@ georchestra:
           memory: 128Mi
         limits:
           memory: 128Mi
+    # Routes gateway traffic to the datafeeder-python chart (separate helm release).
+    # See georchestra/values.yaml for the full explanation.
+    datafeeder_python:
+      enabled: true
+      backendHost: datafeeder-python-backend-svc
+      frontendHost: datafeeder-python-svc
     datahub:
       enabled: true
       replicaCount: "1"
