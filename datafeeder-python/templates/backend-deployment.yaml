@@ -79,6 +79,12 @@ spec:
             value: "{{ $webapp.config.geonetwork.password }}"
           - name: AIRFLOW_INTERNAL_URL
             value: {{ $webapp.config.airflow.url | default (printf "http://%s-api-server:8080/airflow" .Release.Name) | quote }}
+          {{- /* The backend's Settings class (src/core/config.py) reads AIRFLOW_URL, not
+                 AIRFLOW_INTERNAL_URL -- the latter has no validation_alias, so it's silently
+                 ignored and the code falls back to its http://localhost:8081/airflow default.
+                 Set both until that naming drift is fixed upstream. */}}
+          - name: AIRFLOW_URL
+            value: {{ $webapp.config.airflow.url | default (printf "http://%s-api-server:8080/airflow" .Release.Name) | quote }}
           - name: AIRFLOW_USERNAME
             value: "{{ $webapp.config.airflow.username }}"
           - name: AIRFLOW_PASSWORD
