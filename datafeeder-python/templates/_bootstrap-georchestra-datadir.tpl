@@ -16,6 +16,9 @@
     if [ ! -f /etc/georchestra/default.properties ] ; then
       git clone --depth 1 --single-branch {{ .Values.backend.datadir.git.url }} -b {{ .Values.backend.datadir.git.ref }} /etc/georchestra ;
     fi ;
+    if [ ! -e /etc/georchestra/datafeeder-python ] && [ -d /etc/georchestra/datafeeder ] ; then
+      ln -s datafeeder /etc/georchestra/datafeeder-python ;
+    fi ;
   {{- if .Values.backend.datadir.git.ssh_secret }}
   env:
     - name: GIT_SSH_COMMAND
