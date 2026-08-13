@@ -18,6 +18,9 @@ data:
     grant all privileges on database {{ $df.auth.database | quote }} to {{ $df.auth.username | quote }};
     grant all privileges on database {{ $df.auth.database | quote }} to georchestra;
     \c {{ $df.auth.database | quote }};
+    -- Required for the geometry column type used by final published tables
+    -- (task_groups/transformation.py writes e.g. "geom geometry(POINT,4326)").
+    CREATE EXTENSION IF NOT EXISTS postgis;
     CREATE SCHEMA datafeeder;
     CREATE SEQUENCE datafeeder.hibernate_sequence;
     GRANT ALL ON datafeeder.hibernate_sequence TO {{ $df.auth.username | quote }};
