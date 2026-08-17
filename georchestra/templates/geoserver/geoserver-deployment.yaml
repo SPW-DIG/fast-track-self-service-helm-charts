@@ -84,40 +84,40 @@ spec:
                   key: password
                   optional: false
           {{ if $database.builtin }}
-          - name: DF_PGHOST
+          - name: POSTGRES_DATA_HOST
             value: "{{ .Release.Name }}-database"
-          - name: DF_PGDATABASE
+          - name: POSTGRES_DATA_DB
             value: "datafeeder"
           {{ else }}
           {{ if $database.datafeeder.auth.existingSecret }}
           {{- $database_secret_datafeeder_name = $database.datafeeder.auth.existingSecret -}}
           {{ end }}
-          - name: DF_PGHOST
+          - name: POSTGRES_DATA_HOST
             valueFrom:
               secretKeyRef:
                   name: {{ $database_secret_datafeeder_name }}
                   key: host
                   optional: false
-          - name: DF_PGDATABASE
+          - name: POSTGRES_DATA_DB
             valueFrom:
               secretKeyRef:
                   name: {{ $database_secret_datafeeder_name }}
                   key: dbname
                   optional: false
           {{ end }}
-          - name: DF_PGPORT
+          - name: POSTGRES_DATA_PORT
             valueFrom:
               secretKeyRef:
                   name: {{ $database_secret_datafeeder_name }}
                   key: port
                   optional: false
-          - name: DF_PGUSER
+          - name: POSTGRES_DATA_USER
             valueFrom:
               secretKeyRef:
                   name: {{ $database_secret_datafeeder_name }}
                   key: user
                   optional: false
-          - name: DF_PGPASSWORD
+          - name: POSTGRES_DATA_PASSWORD
             valueFrom:
               secretKeyRef:
                   name: {{ $database_secret_datafeeder_name }}
