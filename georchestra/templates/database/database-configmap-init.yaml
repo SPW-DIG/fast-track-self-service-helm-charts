@@ -22,6 +22,7 @@ data:
     -- (task_groups/transformation.py writes e.g. "geom geometry(POINT,4326)").
     CREATE EXTENSION IF NOT EXISTS postgis;
     CREATE SCHEMA datafeeder;
+    GRANT ALL ON SCHEMA datafeeder TO {{ $df.auth.username | quote }};
     CREATE SEQUENCE datafeeder.hibernate_sequence;
     GRANT ALL ON datafeeder.hibernate_sequence TO {{ $df.auth.username | quote }};
     -- Used by the datafeeder-python backend/Airflow DAGs (dags/utils.py
